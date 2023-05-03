@@ -382,7 +382,7 @@ HTML;
 	// populate table rows with expiry data if there is any
 
 	$table = YOURLS_DB_PREFIX . 'expiry';
-	$sql = "SELECT * FROM `$table` ORDER BY timestamp DESC";
+	$sql = "SELECT * FROM $table ORDER BY timestamp DESC";
 	$expiry_list = $ydb->fetchObjects($sql);
 	if($expiry_list) {
 		foreach( $expiry_list as $expiry ) {
@@ -568,7 +568,7 @@ function show_expiry_tablerow($row, $keyword, $url, $title, $ip, $clicks, $times
 		// If the keyword is set to expire, make the URL show in green;
 		$table = YOURLS_DB_PREFIX . 'expiry';
 
-		$sql = "SELECT * FROM $table WHERE `keyword` = :keyword";
+		$sql = "SELECT * FROM $table WHERE keyword = :keyword";
 		$binds = array('keyword' => $keyword);
 		$expiry = $ydb->fetchOne($sql, $binds);
 	
@@ -667,7 +667,7 @@ function expiry_list_mgr($n) {
 				$key = $_GET['key'];
 				$table = YOURLS_DB_PREFIX . 'expiry';
 				$binds = array('key' => $key);
-				$sql = "DELETE FROM `$table` WHERE `keyword` = :key";
+				$sql = "DELETE FROM $table WHERE keyword = :key";
 				$delete = $ydb->fetchAffected($sql, $binds);
 			}
 			// go to list
@@ -679,7 +679,7 @@ function expiry_list_mgr($n) {
 				$key = $_GET['key'];
 				$table = YOURLS_DB_PREFIX . 'expiry';
 				$binds = array('key' => $key);
-				$sql = "UPDATE `$table` SET `postexpire` = 'none' WHERE `keyword` = :key";
+				$sql = "UPDATE $table SET postexpire = 'none' WHERE keyword = :key";
 				$update = $ydb->fetchAffected($sql, $binds);
 			}
 			// go to list
@@ -738,7 +738,7 @@ function expiry_check( $args ) {
 	$keyword = str_replace( YOURLS_SITE . '/' , '', $args[1] ); // accept either 'http://ozh.in/abc' or 'abc'
 	$keyword = yourls_sanitize_string( $keyword );
 	$table = YOURLS_DB_PREFIX . 'expiry';
-	$sql = "SELECT * FROM $table WHERE `keyword` = :keyword";
+	$sql = "SELECT * FROM $table WHERE keyword = :keyword";
 	$binds = array('keyword' => $keyword);
 	$expiry = $ydb->fetchOne($sql, $binds);
 
@@ -1254,10 +1254,10 @@ function expiry_update_DB () {
 	$table = 'expiry';
 	if ( YOURLS_DB_PREFIX ) {
 		try {
-			$sql = "DESCRIBE `".YOURLS_DB_PREFIX . $table."`";
+			$sql = "DESCRIBE ".YOURLS_DB_PREFIX . $table."";
 			$fix = $ydb->fetchAffected($sql);
 		} catch (PDOException $e) {
-			$sql = "RENAME TABLE `".$table."` TO  `".YOURLS_DB_PREFIX.$table."`";
+			$sql = "RENAME TABLE ".$table." TO  ".YOURLS_DB_PREFIX.$table."";
 			$fix = $ydb->fetchAffected($sql);
 		}
 		
@@ -1266,11 +1266,11 @@ function expiry_update_DB () {
 	
 	try {
 	    	$sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
-	    		WHERE TABLE_NAME = `".$table."`
+	    		WHERE TABLE_NAME = ".$table."
 	    		AND ENGINE = 'INNODB' LIMIT 1";
 	    	$fix = $ydb->fetchAffected($sql);
     	} catch (PDOException $e) {
-		$sql = "ALTER TABLE `".$table."` ENGINE = INNODB;";
+		$sql = "ALTER TABLE ".$table." ENGINE = INNODB;";
 		$fix = $ydb->fetchAffected($sql);
 	}
 }
@@ -1281,15 +1281,15 @@ function expiry_activated() {
 	global $ydb;
 	// Create the expiry table
 	$table = YOURLS_DB_PREFIX . 'expiry';
-	$table_expiry  = "CREATE TABLE IF NOT EXISTS `".$table."` (";
-	$table_expiry .= "keyword binary(100) NOT NULL, ";
+
+	$table_expiry  = "CREATE TABLE IF NOT EXISTS $table (";
+	$table_expiry .= "keyword varchar(200) NOT NULL, ";
 	$table_expiry .= "type varchar(5) NOT NULL, ";
 	$table_expiry .= "click varchar(5), ";
 	$table_expiry .= "timestamp varchar(20), ";
 	$table_expiry .= "shelflife varchar(20), ";
 	$table_expiry .= "postexpire varchar(200), ";
-	$table_expiry .= "PRIMARY KEY (keyword) ";
-	$table_expiry .= ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+	$table_expiry .= "PRIMARY KEY (keyword)); ";
 
 	$tables = $ydb->fetchAffected($table_expiry);
 }
@@ -1320,7 +1320,7 @@ function expiry_db_flush( $type ) {
 			
 		// delete every short url that is set to expire	
 		case 'killall': // nuke
-			$sql = "SELECT * FROM `$table` ORDER BY timestamp DESC";
+			$sql = "SELECT * FROM $table ORDER BY timestamp DESC";
 			$expiry_list = $ydb->fetchObjects($sql);
 			if($expiry_list) {
 				foreach( $expiry_list as $expiry ) {
@@ -1335,7 +1335,7 @@ function expiry_db_flush( $type ) {
 		case 'expired': // get rid of expired links that have not been triggered
 		default:
 
-			$sql = "SELECT * FROM `$table` ORDER BY timestamp DESC";
+			$sql = "SELECT * FROM $table ORDER BY timestamp DESC";
 			$expiry_list = $ydb->fetchObjects($sql);
 				
 			if($expiry_list) {
@@ -1363,7 +1363,7 @@ function expiry_cleanup( $args ) {
 	$table = YOURLS_DB_PREFIX . 'expiry';
 
 	$binds = array( 'keyword' => $keyword );
-	$sql = "DELETE FROM $table WHERE `keyword` = :keyword";
+	$sql = "DELETE FROM $table WHERE keyword = :keyword";
 	$ydb->fetchAffected($sql, $binds);
 
 
