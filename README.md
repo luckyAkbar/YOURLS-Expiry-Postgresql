@@ -1,4 +1,4 @@
-# YOURLS-Expiry
+# YOURLS-Expiry with added compatibility for Postgresql
 [YOURLS](https://github.com/YOURLS/YOURLS) plugin to define conditions under which links will expire - time and click limited links
 
 #### Installation
